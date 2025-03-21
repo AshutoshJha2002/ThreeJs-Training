@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { emissive, or } from 'three/tsl';
+import { emissive, materialLightMap, or } from 'three/tsl';
 //import BufferGeometryUtils from "https://cdn.jsdelivr.net/npm/three@0.125.2/examples/jsm/utils/BufferGeometryUtils.js";
 function task2() {
     const scene = new THREE.Scene();
@@ -592,30 +592,87 @@ function test1() {
     const controls = new OrbitControls(camera, renderer.domElement);
 
     //Creating the shape with varying width and height
-    let width = 700, height = 800;
-    let temp1=width/40;
-    let temp2=height/50;
+    /*let width = 400, height = 500;
+    let radii = (width * (3 / 20)) / 2;
     const shape = new THREE.Shape();
-    shape.moveTo(0, 0);
+    shape.moveTo(-(width / 40), 0);
+    shape.bezierCurveTo(-width / 40, 0, 0, 0, 0, -height / 50);
     shape.lineTo(0, -height * (3 / 25));
-shape.bezierCurveTo(0,-(7*temp2),4*temp1,-12*temp2,6*temp1,-6*temp2);
-    shape.lineTo(width * (3 / 20), 0);
-shape.bezierCurveTo(26*temp1,0,32*temp1,0,28*temp1,-38*temp2);
+    shape.quadraticCurveTo(((0 + (width * (3 / 20)))) / 2, -height * (3 / 25) - ((0 + (width * (3 / 20)))) / 2, width * (3 / 20), -height * (3 / 25))
+    shape.lineTo(width * (3 / 20), -(height / 50));
+    shape.bezierCurveTo(width * (3 / 20), -(height / 50), width * (3 / 20), 0, width * (3 / 20) + (width / 40), 0);
+    shape.lineTo(4 * width * (3 / 20) + width / 20, 0);
+    shape.quadraticCurveTo(4 * width * (3 / 20) + (width / 10), 0, 4 * width * (3 / 20) + width / 10, -20);
     shape.lineTo(4 * width * (3 / 20) + (width / 10), -(6 * height * (3 / 25) + (height / 25)));
-shape.bezierCurveTo(30*temp1,-40*temp2,32*temp1,-42*temp2,34*temp1,-38*temp2);
-    shape.bezierCurveTo(32*temp1,6*temp2,36*temp1,6*temp2,6*temp1,6*temp2);
+    let midPoint1 = ((4 * width * (3 / 20) + (width / 10)) + (5 * width * (3 / 20) + (width / 10))) / 2;
+    shape.quadraticCurveTo(midPoint1, -(6 * height * (3 / 25) + (height / 25)) - radii, 5 * width * (3 / 20) + (width / 10), -(6 * height * (3 / 25) + (height / 25)) + (height / 80));
+    shape.lineTo(5 * width * (3 / 20) + (width / 10), height / 10 - (height / 50));
+    shape.quadraticCurveTo(5 * width * (3 / 20) + (width / 10), height * (3 / 25), 5 * width * (3 / 20) + (width / 20), height * (3 / 25));
+    shape.lineTo(width * (3 / 20) + (width / 40), height * (3 / 25))
+    shape.bezierCurveTo(width * (3 / 20) + (width / 40), height * (3 / 25), width * (3 / 20), height * (3 / 25), width * (3 / 20), height * (3 / 25) + height / 50);
     shape.lineTo(width * (3 / 20), 2 * height * (3 / 25));
-shape.bezierCurveTo(4*temp1,14*temp2,2*temp1,16*temp2,0,12*temp2);
-    shape.lineTo(0, height * (3 / 25));
+    shape.quadraticCurveTo(radii, 2 * height * (3 / 25) + radii, 0, 2 * height * (3 / 25));
+    shape.lineTo(0, height * (3 / 25) + height / 50);
+    shape.bezierCurveTo(0, height * (3 / 25) + height / 50, 0, (height * (3 / 25)), -(width / 40), height * (3 / 25));
     shape.lineTo(-width * (3 / 20), height * (3 / 25));
-shape.bezierCurveTo(-8*temp1,4*temp2,-10*temp1,2*temp2,-6*temp1,0);
-    shape.lineTo(0, 0);
+    let midPoint2 = -width * (3 / 20) - (height * (3 / 25)) / 2;
+    shape.quadraticCurveTo(-width * (3 / 20) - radii, height * (3 / 25) / 2, -width * (3 / 20), 0);
+    shape.lineTo(-(width / 40), 0);*/
+    let width = 400, height = 500;
+    let variableHeight = 0;
+    let variableWidth = 0;
+    let radii = (width * (3 / 20)) / 2;
+    const shape = new THREE.Shape();
+    shape.moveTo(-10, 0);
+    shape.bezierCurveTo(-10, 0, 0, 0, 0, -10);
+    shape.lineTo(0, -60);
+    //shape.quadraticCurveTo(30, -90, 60, -60);  //(30,-90,60,-60)
+    shape.absarc(30, -60, 30, Math.PI, Math.PI * 2, false);
+    //shape.lineTo(60, -60);
+    shape.bezierCurveTo(60, -10, 60, 0, 70, 0);
+
+
+    shape.lineTo(260 + variableWidth, 0);
+    shape.quadraticCurveTo(280 + variableWidth, 0, 280 + variableWidth, -20);
+
+
+    shape.lineTo(280 + variableWidth, -380 - variableHeight);
+    shape.absarc(310 + variableWidth, -380 - variableHeight, 30, Math.PI, Math.PI * 2, false);
+    //shape.lineTo(340,-380);
+    //let midPoint1 = 310;
+    //shape.quadraticCurveTo(midPoint1+variableWidth, -410-variableHeight, 340+variableWidth, -375.75-variableHeight);
+
+
+    shape.lineTo(340 + variableWidth, 40);
+    shape.quadraticCurveTo(340 + variableWidth, 60, 320 + variableWidth, 60);//
+
+
+
+    shape.lineTo(70, 60)
+    shape.bezierCurveTo(70, 60, 60, 60, 60, 70);
+
+    shape.lineTo(60, 120);
+    shape.absarc(30, 120, 30, 0, Math.PI, false);
+    //shape.quadraticCurveTo(30, 150, 0, 120);
+    //shape.lineTo(0,120);
+
+    shape.lineTo(0, 70);
+    shape.bezierCurveTo(0, 70, 0, 60, -10, 60);
+
+    shape.lineTo(-60, 60);
+    shape.absarc(-60, 30, 30, Math.PI / 2, 3 * Math.PI / 2, false);
+    //shape.quadraticCurveTo(-90, 30, -60, 0);
+    //shape.lineTo(-60,0);
+
+    shape.lineTo(-10, 0);
+
 
     //Creating the hole and pushing it into the shape
+    let diameter = 50;
     let hole = new THREE.Path();
-    hole.absarc((width * (3 / 20)) / 2, (height * (3 / 25)) / 2, 25, 0, Math.PI * 2, false);
+    hole.absarc((width * (3 / 20)) / 2, (height * (3 / 25)) / 2, diameter / 2, 0, Math.PI * 2, false);
     shape.holes.push(hole);
-    
+
     // Extrusion along the width with variable extrudeWidth
     let extrudeWidth = 800;
     const line = new THREE.LineCurve3(new THREE.Vector3(0, 0, 0), new THREE.Vector3(extrudeWidth, 0, 0));
@@ -648,7 +705,831 @@ shape.bezierCurveTo(-8*temp1,4*temp2,-10*temp1,2*temp2,-6*temp1,0);
 
 }
 
-test1();
+
+function test2() {
+
+    //Setting scene, camera and renderer
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+    camera.position.set(0, 0, 1500);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+    const controls = new OrbitControls(camera, renderer.domElement);
+
+
+    //Method 1
+    /*let height=500,width=200;
+    let variableHeight=0;
+    let variableWidth=0;
+   const shape=new THREE.Shape();
+   shape.moveTo(0-variableWidth,0);
+
+
+//10=(height/50), (width/20)
+let temp1=height/50, temp2=width/20;
+
+   //Region 2 on left
+   shape.lineTo(13*temp2,temp1);  //(130,10)
+   shape.bezierCurveTo(13*temp2,1*temp1,14*temp2,temp1,14*temp2,0); //(130,10,140,10,140,0)
+
+   //Region 1 on bottom
+   shape.lineTo(14*temp2,-35*temp1-(3*variableHeight/4));   //(140,-350)
+   shape.quadraticCurveTo(17*temp2,-37.5*temp1-(3*variableHeight/4),20*temp2,-35*temp1-(3*variableHeight/4));  //(170,-375,200,-350)
+
+shape.lineTo(20*temp2,14*temp1); //(200,140)
+//
+shape.bezierCurveTo(20*temp2,14*temp1+(variableHeight/4),20*temp2,15*temp1+(variableHeight/4),19*temp2,15*temp1+(variableHeight/4));  //(200,140,200,150,190,150)
+  // shape.lineTo(200,150);
+
+
+   shape.lineTo(0-variableWidth,12.5*temp1+(variableHeight/4));  //(0,125)
+   shape.lineTo(0-variableWidth,0);*/
+
+
+    //Method 2
+    //Declaring height and width and biasing for the shape
+    let height = 500, width = 200;
+    let shapeWidth = 60;
+    let biasing = 10;
+
+    //Condition for height
+    if (height > 5000 || height < 300) {
+        alert("Height cannot be greater than 5000 and also height cannot be less than 300");
+        height = 500;
+    }
+
+    if (width < 200) {
+        alert("Width cannot be less than 200");
+        width = 200;
+    }
+
+    //Creating the shape
+    const shape = new THREE.Shape();
+    shape.moveTo(0, height - (height / 4) - (height / 10));
+
+    //Region 2 on left
+    shape.lineTo(width - shapeWidth - biasing, height - (height / 4));
+    shape.bezierCurveTo(width - shapeWidth - biasing, height - (height / 4), width - shapeWidth, height - (height / 4), width - shapeWidth, height - (height / 4) - biasing);
+
+    //Region 1 on bottom
+    shape.lineTo(width - shapeWidth, 0);
+    shape.absarc(width - shapeWidth + (shapeWidth / 2), 0, (shapeWidth / 2), Math.PI, Math.PI * 2, false);
+
+
+    shape.lineTo(width, height - biasing);
+    shape.bezierCurveTo(width, height - biasing, width, height, width - biasing, height);
+
+
+    shape.lineTo(0, height - (height / 10));
+    shape.lineTo(0, height - (height / 4) - (height / 10));
+
+    //Defining the hole
+    let diameter = 50;
+    if (diameter > (height / 4)) {
+        alert("Diameter cannot be greater than height/4");
+        diameter = (height / 4);
+    }
+    const hole = new THREE.Path();
+    hole.absarc((width - shapeWidth) / 2, height - height / 4 - (height / 10) + (height / 4 + height / 10) / 2, diameter / 2, 0, Math.PI * 2, false);
+    shape.holes.push(hole);
+
+    const extrudeSettings = {
+        depth: 0,
+        bevelEnabled: false
+    };
+
+
+    // Creating extrude geometry
+    const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    const material = new THREE.MeshBasicMaterial({ color: "green", side: THREE.DoubleSide });
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+
+    //Setting color for the edges to make the edges visible
+    const edges = new THREE.EdgesGeometry(geometry);
+    const edgeMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+    const edgeMesh = new THREE.LineSegments(edges, edgeMaterial);
+    scene.add(edgeMesh);
+
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+    }
+    animate();
+
+}
+
+function mySelf() {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+    camera.position.set(0, 0, 300);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+    const controls = new OrbitControls(camera, renderer.domElement);
+    let R = 60, r = 30;
+    const shape = new THREE.Shape();
+    shape.moveTo(0, 0);
+    shape.absarc(0, 0, 60, 0, Math.PI, false);
+    const hole = new THREE.Shape();
+    hole.moveTo(0, -1);
+    hole.absarc(0, -1, 30, 0, Math.PI, false);
+    shape.holes.push(hole);
+    shape.lineTo(0, -1);
+    const geometry = new THREE.ExtrudeGeometry(shape);
+    const material = new THREE.MeshBasicMaterial({ color: "red", wireframe: false });
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+    }
+    animate();
+
+}
+//#region test number 3
+function test3() {
+
+    //Setting scene, camera and renderer
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+    camera.position.set(0, 0, 1500);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+    const controls = new OrbitControls(camera, renderer.domElement);
+
+    //Creating the shape using ShapeGeometry with given height, width and biasing. Biasing is used to pull out the shape
+    let width = 500, height = 500;
+    let shapeWidth = 100;
+    let biasing = 10;
+    const shape = new THREE.Shape();
+    shape.moveTo(0, biasing);
+    shape.quadraticCurveTo(0, 0, biasing, 0);
+    shape.lineTo(width - biasing, 0);
+    shape.quadraticCurveTo(width, 0, width, biasing);
+    shape.lineTo(width, height / 3);
+    shape.absarc(width - (shapeWidth / 2), height / 3, shapeWidth / 2, 0, Math.PI, false);
+    shape.lineTo(width - shapeWidth, shapeWidth + biasing);
+    shape.quadraticCurveTo(width - shapeWidth, shapeWidth, width - shapeWidth - biasing, shapeWidth);
+    shape.lineTo(shapeWidth + biasing, shapeWidth);
+    shape.quadraticCurveTo(shapeWidth, shapeWidth, shapeWidth, shapeWidth + biasing);
+    shape.lineTo(shapeWidth, height - shapeWidth);
+    let mid1 = (width / 2 - shapeWidth - shapeWidth) / 2;
+    shape.absarc(shapeWidth + mid1, height - shapeWidth, mid1, Math.PI, 2 * Math.PI, true);
+    shape.lineTo(shapeWidth + (width / 2 - shapeWidth - shapeWidth), height - (height / 3));
+    shape.absarc(width / 2 - shapeWidth + (shapeWidth / 2), height - (height / 3), shapeWidth / 2, Math.PI, Math.PI * 2, false);
+    shape.lineTo(width / 2, height - shapeWidth);
+    shape.absarc(width / 4, height - shapeWidth, width / 4, 0, Math.PI, false);
+    shape.lineTo(0, biasing);
+
+    //Defing the holes which should be placed in the above shape
+    let diameter = 90;
+    if (diameter > 60) diameter = 50;
+    const hole1 = new THREE.Path();
+    hole1.absarc(width - shapeWidth + (shapeWidth / 2), height / 3.5, diameter / 2, 0, Math.PI * 2, false);
+    shape.holes.push(hole1);
+
+    const hole2 = new THREE.Path();
+    hole2.absarc(width / 2 - (shapeWidth / 2), height - (height / 3.5), diameter / 2, 0, Math.PI * 2, false);
+    shape.holes.push(hole2);
+
+    //Defining extrude settings
+    const extrudeSettings = {
+        depth: 50,
+        bevelEnabled: false
+    };
+
+    //Defining the geometry and material
+    const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    const material = new THREE.MeshBasicMaterial({ color: "red", side: THREE.DoubleSide });
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+
+    //Making the edges outline
+    const edges = new THREE.EdgesGeometry(geometry);
+    const edgeMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+    const edgeMesh = new THREE.LineSegments(edges, edgeMaterial);
+    scene.add(edgeMesh);
+
+    // Animating the shape
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+    }
+    animate();
+
+}
+
+//#endregion
+
+//#region test number 4
+function test4() {
+    //Setting scene, camera and renderer
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+    camera.position.set(0, 0, 1500);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+    const controls = new OrbitControls(camera, renderer.domElement);
+
+    let squareWidth = 1000, squareHeight = 800;
+    let rectangleWidth = 300, rectangleHeight = 100;
+    let diameter = 60;
+    let changedDiameter = diameter - 60;
+
+    //Handling shape break dimensions
+    if (squareHeight < rectangleHeight + 20) squareHeight = 500;
+    if (squareWidth < diameter) squareWidth = diameter;
+    if (diameter - squareWidth > 300) diameter = 60;
+    if (changedDiameter > 20) rectangleHeight += changedDiameter;
+    if (squareHeight - rectangleHeight < 20) rectangleHeight = 200;
+    if (rectangleHeight < diameter) rectangleHeight = diameter;
+
+
+    //#region square geometry coordinates
+    const square = new THREE.Shape();
+    square.moveTo(0, 0 - changedDiameter / 2);
+    square.lineTo(squareWidth, 0 - changedDiameter / 2);
+    square.lineTo(squareWidth, squareHeight + changedDiameter / 2);
+    square.lineTo(0 - changedDiameter / 2, squareHeight + changedDiameter / 2);
+    square.lineTo(0 - changedDiameter / 2, 0 - changedDiameter / 2);
+    //#endregion 
+
+    //#region rectangle geometry coordinates
+    const rectangle = new THREE.Shape();
+    rectangle.moveTo(0 + changedDiameter / 2, 0 - changedDiameter / 2);
+    rectangle.lineTo(0 + changedDiameter / 2, rectangleHeight + changedDiameter / 2);
+    rectangle.lineTo(-rectangleWidth - changedDiameter, rectangleHeight + changedDiameter / 2);
+    rectangle.lineTo(-rectangleWidth - changedDiameter, 0 - changedDiameter / 2);
+    rectangle.lineTo(0 + changedDiameter / 2, 0 - changedDiameter / 2);
+    //#endregion
+
+    //#region square hole
+    const squareHole = new THREE.Path();
+    squareHole.absarc(40, squareHeight / 2, diameter / 2, 0, Math.PI * 2, false);
+    square.holes.push(squareHole)
+    //rectangle.holes.push(hole);
+    //#endregion
+
+    //#region rectangle hole
+    const rectangleHole = new THREE.Path();
+    rectangleHole.absarc(-40, rectangleHeight / 2, diameter / 2, 0, Math.PI * 2, false);
+    rectangle.holes.push(rectangleHole);
+    //#endregion
+
+    const extrudeSettings = {
+        depth: 50,
+        bevelEnabled: false
+    };
+
+    //#region square mesh
+    const squareGeometry = new THREE.ExtrudeGeometry(square, extrudeSettings);
+    const material = new THREE.MeshBasicMaterial({ color: "red", side: THREE.DoubleSide, wireframe: false });
+    const squareMesh = new THREE.Mesh(squareGeometry, material);
+    scene.add(squareMesh);
+    //#endregion
+
+    //#region rectangle mesh
+    const rectangleGeometry = new THREE.ExtrudeGeometry(rectangle, extrudeSettings);
+    const rectangleMesh = new THREE.Mesh(rectangleGeometry, material);
+    scene.add(rectangleMesh);
+    rectangleMesh.position.set(80, (squareHeight - rectangleHeight) / 2, 50);
+    //#endregion
+
+    //#region square edges
+    const squareEdges = new THREE.EdgesGeometry(squareGeometry);
+    const squareEdgeMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+    const squareEdgeMesh = new THREE.LineSegments(squareEdges, squareEdgeMaterial);
+    scene.add(squareEdgeMesh);
+    //#endregion
+
+    //#region  rectangle edges
+    const rectangleEdges = new THREE.EdgesGeometry(rectangleGeometry);
+    const rectangleEdgeMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+    const rectangleEdgeMesh = new THREE.LineSegments(rectangleEdges, rectangleEdgeMaterial);
+    scene.add(rectangleEdgeMesh);
+    //#endregion
+    rectangleEdgeMesh.position.set(80, (squareHeight - rectangleHeight) / 2, 50);
+
+    // Animating the shape
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+    }
+    animate();
+}
+
+//#endregion
+
+function task5() {
+    //Setting scene, camera and renderer
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+    camera.position.set(0, 0, 1500);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+    const controls = new OrbitControls(camera, renderer.domElement);
+
+    let squareWidth = 500, squareHeight = 500;
+    let rectangleWidth = 200, rectangleHeight = 80;
+    if (rectangleHeight > 320) rectangleHeight = 320;
+    let changedRectangleHeight = rectangleHeight - 80;
+    let diameter = 60;
+    if (diameter > 130) diameter = 130;
+    if (squareWidth < 200) squareWidth = 500;
+    if (squareHeight < 200) squareWidth = 500;
+    if (rectangleHeight < 80) rectangleHeight = 80;
+    if (rectangleWidth < 100) rectangleWidth = 200;
+    let changedDiameter = diameter - 60;
+
+    const extrudeSettings = {
+        depth: 50,
+        bevelEnabled: false
+    };
+
+
+    //Handling shape break dimensions
+    if (squareHeight < rectangleHeight + 20) squareHeight = 500;
+    if (squareWidth < diameter) squareWidth = diameter;
+    if (diameter - squareWidth > 300) diameter = 60;
+    if (changedDiameter > 20) rectangleHeight += changedDiameter;
+    if (squareHeight - rectangleHeight < 20) rectangleHeight = 200;
+    if (rectangleHeight < diameter) rectangleHeight = diameter;
+
+    //#region square geometry
+    const square = new THREE.Shape();
+    square.moveTo(0, 0 - changedDiameter / 2);
+    square.lineTo(squareWidth, 0 - changedDiameter / 2);
+    square.lineTo(squareWidth, squareHeight + changedDiameter / 2);
+    square.lineTo(0 - changedDiameter / 2, squareHeight + changedDiameter / 2);
+    square.lineTo(0 - changedDiameter / 2, 0 - changedDiameter / 2);
+
+    const squareHole = new THREE.Path();
+    squareHole.absarc(40, squareHeight / 2, diameter / 2, 0, Math.PI * 2, false);
+    square.holes.push(squareHole);
+
+    const squareHole1 = new THREE.Path();
+    squareHole1.absarc(squareWidth / 2, 40, diameter / 2, 0, Math.PI * 2, false);
+    square.holes.push(squareHole1);
+
+    const squareHole2 = new THREE.Path();
+    squareHole2.absarc(squareWidth - 40 - (changedDiameter / 2), squareHeight / 2, diameter / 2, 0, Math.PI * 2, false);
+    square.holes.push(squareHole2);
+
+    const squareHole3 = new THREE.Path();
+    squareHole3.absarc(squareWidth / 2, squareHeight - 40, diameter / 2, 0, Math.PI * 2, false);
+    square.holes.push(squareHole3);
+
+    const squareGeometry = new THREE.ExtrudeGeometry(square, extrudeSettings);
+    const material = new THREE.MeshBasicMaterial({ color: "red", side: THREE.DoubleSide, wireframe: false });
+    const material1 = new THREE.MeshBasicMaterial({ color: "green", side: THREE.DoubleSide, wireframe: false });
+    const squareMesh = new THREE.Mesh(squareGeometry, material);
+    scene.add(squareMesh);
+
+    const squareEdges = new THREE.EdgesGeometry(squareGeometry);
+    const squareEdgeMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+    const squareEdgeMesh = new THREE.LineSegments(squareEdges, squareEdgeMaterial);
+    squareMesh.add(squareEdgeMesh);
+    //#endregion
+
+    //#region  Left Child
+    const rectangle = new THREE.Shape();
+    rectangle.moveTo(0 + changedDiameter / 2, 0 - changedDiameter / 2);
+    rectangle.lineTo(0 + changedDiameter / 2, rectangleHeight + changedDiameter / 2);
+    rectangle.lineTo(-rectangleWidth - changedDiameter, rectangleHeight + changedDiameter / 2);
+    rectangle.lineTo(-rectangleWidth - changedDiameter, 0 - changedDiameter / 2);
+    rectangle.lineTo(0 + changedDiameter / 2, 0 - changedDiameter / 2);
+
+    const rectangleHole = new THREE.Path();
+    rectangleHole.absarc(-40, rectangleHeight / 2, diameter / 2, 0, Math.PI * 2, false);
+    rectangle.holes.push(rectangleHole);
+
+    const rectangleGeometry = new THREE.ExtrudeGeometry(rectangle, extrudeSettings);
+    const rectangleMesh = new THREE.Mesh(rectangleGeometry, material1);
+    squareMesh.add(rectangleMesh);
+    rectangleMesh.position.set(80, (squareHeight - rectangleHeight) / 2, 50);
+
+    const rectangleEdges = new THREE.EdgesGeometry(rectangleGeometry);
+    const rectangleEdgeMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+    const rectangleEdgeMesh = new THREE.LineSegments(rectangleEdges, rectangleEdgeMaterial);
+    rectangleMesh.add(rectangleEdgeMesh);
+    //#endregion
+
+    //#region  right Child
+    const rectangle1 = new THREE.Shape();
+    rectangle1.moveTo(0, 0 - changedDiameter / 2);
+    rectangle1.lineTo(0, rectangleHeight + changedDiameter / 2);
+    rectangle1.lineTo(-rectangleWidth - changedDiameter - (changedDiameter / 2), rectangleHeight + changedDiameter / 2);
+    rectangle1.lineTo(-rectangleWidth - changedDiameter - (changedDiameter / 2), 0 - changedDiameter / 2);
+    rectangle1.lineTo(0, 0 - changedDiameter / 2);
+
+    const rectangleHole1 = new THREE.Path();
+    rectangleHole1.absarc(-40 - (changedDiameter / 2), 40 + (changedRectangleHeight / 2) + (changedDiameter / 2), diameter / 2, 0, Math.PI * 2, false);
+    rectangle1.holes.push(rectangleHole1);
+
+    const rectangleGeometry1 = new THREE.ExtrudeGeometry(rectangle1, extrudeSettings);
+    const rectangleMesh1 = new THREE.Mesh(rectangleGeometry1, material1);
+    squareMesh.add(rectangleMesh1);
+    rectangleMesh1.rotation.set(0, Math.PI, 0);
+    rectangleMesh1.position.set(squareWidth - diameter - 20, (squareHeight - rectangleHeight) / 2, 100);
+
+    const rectangleEdges1 = new THREE.EdgesGeometry(rectangleGeometry1);
+    const rectangleEdgeMaterial1 = new THREE.LineBasicMaterial({ color: 0xffffff });
+    const rectangleEdgeMesh1 = new THREE.LineSegments(rectangleEdges1, rectangleEdgeMaterial1);
+    rectangleMesh1.add(rectangleEdgeMesh1);
+    //#endregion
+
+
+    //#region  Bottom Child
+    const rectangle2 = new THREE.Shape();
+    rectangle2.moveTo(0 - changedDiameter / 2, 0 - changedDiameter / 2);
+    rectangle2.lineTo(0 - changedDiameter / 2, rectangleHeight + changedDiameter / 2);
+    rectangle2.lineTo(-rectangleWidth - 2 * changedDiameter, rectangleHeight + changedDiameter / 2);
+    rectangle2.lineTo(-rectangleWidth - 2 * changedDiameter, 0 - changedDiameter / 2);
+    rectangle2.lineTo(0 - changedDiameter / 2, 0 - changedDiameter / 2);
+
+
+    const rectangleHole2 = new THREE.Path();
+    rectangleHole2.absarc(-40 - changedDiameter, 40 + (changedRectangleHeight / 2) + (changedDiameter / 2), diameter / 2, 0, Math.PI * 2, false);
+    rectangle2.holes.push(rectangleHole2);
+
+    const rectangleGeometry2 = new THREE.ExtrudeGeometry(rectangle2, extrudeSettings);
+    const rectangleMesh2 = new THREE.Mesh(rectangleGeometry2, material1);
+    squareMesh.add(rectangleMesh2);
+    rectangleMesh2.rotation.set(0, Math.PI, Math.PI / 2);
+    rectangleMesh2.position.set((squareWidth - rectangleHeight) / 2, diameter + 20, 100);
+
+    const rectangleEdges2 = new THREE.EdgesGeometry(rectangleGeometry2);
+    const rectangleEdgeMaterial2 = new THREE.LineBasicMaterial({ color: 0xffffff });
+    const rectangleEdgeMesh2 = new THREE.LineSegments(rectangleEdges2, rectangleEdgeMaterial2);
+    rectangleMesh2.add(rectangleEdgeMesh2);
+    //#endregion
+
+    //#region Top Child
+    const rectangle3 = new THREE.Shape();
+    rectangle3.moveTo(0 - changedDiameter / 2, 0 - changedDiameter / 2);
+    rectangle3.lineTo(0 - changedDiameter / 2, rectangleHeight + changedDiameter / 2);
+    rectangle3.lineTo(-rectangleWidth - 2 * changedDiameter, rectangleHeight + changedDiameter / 2);
+    rectangle3.lineTo(-rectangleWidth - 2 * changedDiameter, 0 - changedDiameter / 2);
+    rectangle3.lineTo(0 - changedDiameter / 2, 0 - changedDiameter / 2);
+
+    const rectangleHole3 = new THREE.Path();
+    rectangleHole3.absarc(-40, 40, diameter / 2, 0, Math.PI * 2, false);
+    rectangle3.holes.push(rectangleHole2);
+
+    const rectangleGeometry3 = new THREE.ExtrudeGeometry(rectangle3, extrudeSettings);
+    const rectangleMesh3 = new THREE.Mesh(rectangleGeometry3, material1);
+    squareMesh.add(rectangleMesh3);
+    rectangleMesh3.rotation.set(Math.PI, Math.PI, Math.PI / 2);
+    rectangleMesh3.position.set((squareWidth - rectangleHeight) / 2, squareHeight - diameter - 20, 50);
+
+    const rectangleEdges3 = new THREE.EdgesGeometry(rectangleGeometry3);
+    const rectangleEdgeMaterial3 = new THREE.LineBasicMaterial({ color: 0xffffff });
+    const rectangleEdgeMesh3 = new THREE.LineSegments(rectangleEdges3, rectangleEdgeMaterial3);
+    rectangleMesh3.add(rectangleEdgeMesh3);
+    //#endregion
+
+    // Animating the shape
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+    }
+    animate();
+}
+
+function task6() {
+    //Setting scene, camera and renderer
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+    camera.position.set(0, 0, 1500);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+    const controls = new OrbitControls(camera, renderer.domElement);
+
+    let parentWidth = 500, height = 500;
+    let biasing = 20;
+    const parentObj = new THREE.Shape();
+    parentObj.moveTo(biasing, 0);
+    parentObj.lineTo(parentWidth - biasing, 0);
+    parentObj.quadraticCurveTo(parentWidth, 0, parentWidth, biasing);
+    parentObj.lineTo(parentWidth, height - biasing);
+    parentObj.quadraticCurveTo(parentWidth, height, parentWidth - biasing, height);
+    parentObj.lineTo(biasing, height);
+    parentObj.quadraticCurveTo(0, height, 0, height - biasing);
+    parentObj.lineTo(0, biasing);
+    parentObj.quadraticCurveTo(0, 0, biasing, 0);
+
+    let childWidth = 200, childHeight = 80;
+    const childObj = new THREE.Shape();
+    childObj.moveTo(0, 0);
+    childObj.lineTo(childWidth, 0);
+    childObj.lineTo(childWidth, childHeight);
+    childObj.lineTo(0, childHeight);
+    childObj.lineTo(0, 0);
+
+    const extrudeSettings = {
+        depth: 50,
+        bevelEnabled: false
+    };
+
+    const parentObjGeometry = new THREE.ExtrudeGeometry(parentObj, extrudeSettings);
+    const parentObjMaterial = new THREE.MeshBasicMaterial({ color: "green", side: THREE.DoubleSide, wireframe: false });
+    const parentObjMesh = new THREE.Mesh(parentObjGeometry, parentObjMaterial);
+    scene.add(parentObjMesh);
+
+    const childObjGeometry = new THREE.ExtrudeGeometry(childObj, extrudeSettings);
+    const childObjMaterial = new THREE.MeshBasicMaterial({ color: "green", side: THREE.DoubleSide, wireframe: false });
+    const childObjMesh = new THREE.Mesh(childObjGeometry, childObjMaterial);
+    childObjMesh.position.set(-200, 500, 0);
+    childObjMesh.rotation.set(0, 0, 0);
+    parentObjMesh.add(childObjMesh);
+
+    const edges = new THREE.EdgesGeometry(parentObjGeometry);
+    const edgesMaterial = new THREE.LineBasicMaterial({ color: "white" });
+    const edgesMesh = new THREE.LineSegments(edges, edgesMaterial);
+    parentObjMesh.add(edgesMesh);
+
+    // Animating the shape
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+    }
+    animate();
+}
+
+function project1() {
+    //Setting scene, camera and renderer
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+    camera.position.set(0, 0, 1500);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+    const controls = new OrbitControls(camera, renderer.domElement);
+
+    let parentWidth = 100, parentHeight = 900;
+    let keyHoleMid = parentWidth / 2;
+    let biasing = 10;
+    const parentShape = new THREE.Shape();
+    parentShape.moveTo(0, 0);
+    parentShape.absarc(parentWidth / 2, 0, parentWidth / 2, Math.PI, Math.PI * 2, false);
+    // parentShape.lineTo(parentWidth, 0);
+    parentShape.lineTo(parentWidth, parentHeight);
+    parentShape.absarc(parentWidth / 2, parentHeight, parentWidth / 2, 0, Math.PI, false);
+    // parentShape.lineTo(0, parentHeight);
+    parentShape.lineTo(0, 0);
+
+    const keyHoleWidth = parentWidth / 3, keyHoleHeight = 200;
+    const keyHoleShape = new THREE.Shape();
+    keyHoleShape.moveTo(-keyHoleWidth / 2 + keyHoleMid, keyHoleHeight);
+    keyHoleShape.absarc(keyHoleMid, keyHoleHeight, keyHoleWidth / 2, Math.PI, Math.PI * 2, false);
+    keyHoleShape.lineTo(keyHoleWidth / 2 + keyHoleMid, keyHoleHeight);
+    keyHoleShape.lineTo(keyHoleWidth / 2 + keyHoleMid, keyHoleHeight + 100 - biasing);
+    keyHoleShape.absarc(keyHoleMid, keyHoleHeight + 100, keyHoleWidth / 2 + biasing, 0, Math.PI, false);
+    keyHoleShape.lineTo(-keyHoleWidth / 2 + keyHoleMid, keyHoleHeight + 100 - biasing);
+    keyHoleShape.lineTo(-keyHoleWidth / 2 + keyHoleMid, keyHoleHeight);
+    parentShape.holes.push(keyHoleShape);
+    const extrudeSettings = {
+        depth: 50,
+        bevelEnabled: false
+    };
+    const parentGeometry = new THREE.ExtrudeGeometry(parentShape, extrudeSettings);
+    const parentMaterial = new THREE.MeshBasicMaterial({ color: "green", side: THREE.DoubleSide });
+    const parentMesh = new THREE.Mesh(parentGeometry, parentMaterial);
+    scene.add(parentMesh);
+
+    const parentEdges = new THREE.EdgesGeometry(parentGeometry);
+    const parentEdgesMaterial = new THREE.LineBasicMaterial({ color: "white" });
+    const parentEdgesMesh = new THREE.LineSegments(parentEdges, parentEdgesMaterial);
+    parentMesh.add(parentEdgesMesh);
+
+    const handleCircle = new THREE.Shape();
+    handleCircle.absarc(0, 0, keyHoleWidth / 2, 0, Math.PI * 2, false);
+    handleCircle.lineTo(0, 0);
+
+    const handlePoints = [
+        new THREE.Vector3(0, 0, -50),
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(-parentWidth, 0, 0),
+        new THREE.Vector3(-parentWidth, parentHeight - 100, 0),
+        new THREE.Vector3(0, parentHeight - 100, 0),
+        new THREE.Vector3(0, parentHeight - 100, -50)
+    ];
+    const handlePath = new THREE.CatmullRomCurve3(handlePoints);
+    const handleGeometry = new THREE.TubeGeometry(
+        handlePath,
+        100,
+        20,
+        8,
+        false
+    );
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const handleMesh = new THREE.Mesh(handleGeometry, material);
+    handleMesh.position.set(parentWidth / 2, 50, 100);
+    parentMesh.add(handleMesh);
+
+    const knob = new THREE.Shape();
+    knob.moveTo(keyHoleMid-20, 0);
+    knob.absarc(keyHoleMid,0, 20, Math.PI, Math.PI*2, false);
+    knob.lineTo(keyHoleMid+20, 0);
+    knob.lineTo(keyHoleMid+20+biasing, 200);
+    knob.absarc(keyHoleMid,200,keyHoleMid/2+biasing/2,0, Math.PI, false);
+    knob.lineTo(keyHoleMid-20-biasing, 200);
+    knob.lineTo(keyHoleMid-20, 0);
+
+    const knobSettings = {
+        depth: 50,
+        bevelEnabled: false
+    };
+
+    const knobGeometry = new THREE.ExtrudeGeometry(knob, knobSettings);
+    const knobMaterial = new THREE.MeshBasicMaterial({ color: "red", side: THREE.DoubleSide });
+    const knobMesh = new THREE.Mesh(knobGeometry, knobMaterial);
+    knobMesh.position.set(0, 550, 50);
+    scene.add(knobMesh);
+
+    // Animating the shape
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+    }
+    animate();
+}
+
+
+function task7() {
+    //Setting scene, camera and renderer
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+    camera.position.set(0, 0, 1500);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+    const controls = new OrbitControls(camera, renderer.domElement);
+
+    let squareWidth = 500, squareHeight = 500;
+    let rectangleWidth = 200, rectangleHeight = 80;
+    if (rectangleHeight > 320) rectangleHeight = 320;
+    let changedRectangleHeight = rectangleHeight - 80;
+    let biasing = 10;
+    let diameter = 60;
+    if (diameter > 130) diameter = 130;
+    if (squareWidth < 200) squareWidth = 500;
+    if (squareHeight < 200) squareWidth = 500;
+    if (rectangleHeight < 80) rectangleHeight = 80;
+    if (rectangleWidth < 100) rectangleWidth = 200;
+    let changedDiameter = diameter - 60;
+
+    const extrudeSettings = {
+        depth: 50,
+        bevelEnabled: false
+    };
+
+
+    //Handling shape break dimensions
+    if (squareHeight < rectangleHeight + 20) squareHeight = 500;
+    if (squareWidth < diameter) squareWidth = diameter;
+    if (diameter - squareWidth > 300) diameter = 60;
+    if (changedDiameter > 20) rectangleHeight += changedDiameter;
+    if (squareHeight - rectangleHeight < 20) rectangleHeight = 200;
+    if (rectangleHeight < diameter) rectangleHeight = diameter;
+
+    //#region square geometry
+    const square = new THREE.Shape();
+    square.moveTo(0, 0 - changedDiameter / 2);
+    square.lineTo(squareWidth, 0 - changedDiameter / 2);
+    square.lineTo(squareWidth, squareHeight + changedDiameter / 2);
+    square.lineTo(0 - changedDiameter / 2, squareHeight + changedDiameter / 2);
+    square.lineTo(0 - changedDiameter / 2, 0 - changedDiameter / 2);
+
+    const squareHole1 = new THREE.Path();
+    squareHole1.absarc(squareWidth / 2, 40, diameter / 2, 0, Math.PI * 2, false);
+    square.holes.push(squareHole1);
+
+    const squareHole2 = new THREE.Path();
+    squareHole2.absarc(squareWidth - 40 - (changedDiameter / 2), squareHeight / 2, diameter / 2, 0, Math.PI * 2, false);
+    square.holes.push(squareHole2);
+
+    const squareHole3 = new THREE.Path();
+    squareHole3.absarc(0 + 4 * biasing, squareHeight - 4 * biasing, diameter / 2, 0, Math.PI * 2, false);
+    square.holes.push(squareHole3);
+
+    const squareGeometry = new THREE.ExtrudeGeometry(square, extrudeSettings);
+    const material = new THREE.MeshBasicMaterial({ color: "red", side: THREE.DoubleSide, wireframe: false });
+    const material1 = new THREE.MeshBasicMaterial({ color: "green", side: THREE.DoubleSide, wireframe: false });
+    const squareMesh = new THREE.Mesh(squareGeometry, material);
+    scene.add(squareMesh);
+
+    const squareEdges = new THREE.EdgesGeometry(squareGeometry);
+    const squareEdgeMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+    const squareEdgeMesh = new THREE.LineSegments(squareEdges, squareEdgeMaterial);
+    squareMesh.add(squareEdgeMesh);
+    //#endregion
+
+    //#region  right Child
+    const rectangle1 = new THREE.Shape();
+    rectangle1.moveTo(0, 0 - changedDiameter / 2);
+    rectangle1.lineTo(0, rectangleHeight + changedDiameter / 2);
+    rectangle1.lineTo(-rectangleWidth - changedDiameter - (changedDiameter / 2), rectangleHeight + changedDiameter / 2);
+    rectangle1.lineTo(-rectangleWidth - changedDiameter - (changedDiameter / 2), 0 - changedDiameter / 2);
+    rectangle1.lineTo(0, 0 - changedDiameter / 2);
+
+    const rectangleHole1 = new THREE.Path();
+    rectangleHole1.absarc(-40 - (changedDiameter / 2), 40 + (changedRectangleHeight / 2) + (changedDiameter / 2), diameter / 2, 0, Math.PI * 2, false);
+    rectangle1.holes.push(rectangleHole1);
+
+    const rectangleGeometry1 = new THREE.ExtrudeGeometry(rectangle1, extrudeSettings);
+    const rectangleMesh1 = new THREE.Mesh(rectangleGeometry1, material1);
+    squareMesh.add(rectangleMesh1);
+    rectangleMesh1.rotation.set(0, Math.PI, 0);
+    rectangleMesh1.position.set(squareWidth - diameter - 20, (squareHeight - rectangleHeight) / 2, 100);
+
+    const rectangleEdges1 = new THREE.EdgesGeometry(rectangleGeometry1);
+    const rectangleEdgeMaterial1 = new THREE.LineBasicMaterial({ color: 0xffffff });
+    const rectangleEdgeMesh1 = new THREE.LineSegments(rectangleEdges1, rectangleEdgeMaterial1);
+    rectangleMesh1.add(rectangleEdgeMesh1);
+    //#endregion
+
+
+    //#region  Bottom Child
+    const rectangle2 = new THREE.Shape();
+    rectangle2.moveTo(0 - changedDiameter / 2, 0 - changedDiameter / 2);
+    rectangle2.lineTo(0 - changedDiameter / 2, rectangleHeight + changedDiameter / 2);
+    rectangle2.lineTo(-rectangleWidth - 2 * changedDiameter, rectangleHeight + changedDiameter / 2);
+    rectangle2.lineTo(-rectangleWidth - 2 * changedDiameter, 0 - changedDiameter / 2);
+    rectangle2.lineTo(0 - changedDiameter / 2, 0 - changedDiameter / 2);
+
+
+    const rectangleHole2 = new THREE.Path();
+    rectangleHole2.absarc(-40 - changedDiameter, 40 + (changedRectangleHeight / 2) + (changedDiameter / 2), diameter / 2, 0, Math.PI * 2, false);
+    rectangle2.holes.push(rectangleHole2);
+
+    const rectangleGeometry2 = new THREE.ExtrudeGeometry(rectangle2, extrudeSettings);
+    const rectangleMesh2 = new THREE.Mesh(rectangleGeometry2, material1);
+    squareMesh.add(rectangleMesh2);
+    rectangleMesh2.rotation.set(0, Math.PI, Math.PI / 2);
+    rectangleMesh2.position.set((squareWidth - rectangleHeight) / 2, diameter + 20, 100);
+
+    const rectangleEdges2 = new THREE.EdgesGeometry(rectangleGeometry2);
+    const rectangleEdgeMaterial2 = new THREE.LineBasicMaterial({ color: 0xffffff });
+    const rectangleEdgeMesh2 = new THREE.LineSegments(rectangleEdges2, rectangleEdgeMaterial2);
+    rectangleMesh2.add(rectangleEdgeMesh2);
+    //#endregion
+
+    //#region Top Child
+    const rectangle3 = new THREE.Shape();
+    rectangle3.moveTo(0 - changedDiameter / 2, 0 - changedDiameter / 2);
+    rectangle3.lineTo(0 - changedDiameter / 2, rectangleHeight + changedDiameter / 2);
+    rectangle3.lineTo(-rectangleWidth - 2 * changedDiameter, rectangleHeight + changedDiameter / 2);
+    rectangle3.lineTo(-rectangleWidth - 2 * changedDiameter, 0 - changedDiameter / 2);
+    rectangle3.lineTo(0 - changedDiameter / 2, 0 - changedDiameter / 2);
+
+    const rectangleHole3 = new THREE.Path();
+    rectangleHole3.absarc(-40, 40, diameter / 2, 0, Math.PI * 2, false);
+    rectangle3.holes.push(rectangleHole2);
+
+    const rectangleGeometry3 = new THREE.ExtrudeGeometry(rectangle3, extrudeSettings);
+    const rectangleMesh3 = new THREE.Mesh(rectangleGeometry3, material1);
+    squareMesh.add(rectangleMesh3);
+    rectangleMesh3.rotation.set(0, 0, -Math.PI / 4);
+    rectangleMesh3.position.set(0 - changedDiameter / 2 + diameter / 2 + 15, squareHeight + changedDiameter / 2 - diameter - 3 * biasing - 10, 50);
+
+    const rectangleEdges3 = new THREE.EdgesGeometry(rectangleGeometry3);
+    const rectangleEdgeMaterial3 = new THREE.LineBasicMaterial({ color: 0xffffff });
+    const rectangleEdgeMesh3 = new THREE.LineSegments(rectangleEdges3, rectangleEdgeMaterial3);
+    rectangleMesh3.add(rectangleEdgeMesh3);
+    //#endregion
+
+    // Animating the shape
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+    }
+    animate();
+}
+
+project1();
+//task6();
+//mySelf();
+//test2();
+//test1();
 //task3();
 //task2();
 //task4();
+//test3();
+//test4();
+//task5();
+//task7();
