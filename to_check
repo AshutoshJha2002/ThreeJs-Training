@@ -1278,9 +1278,26 @@ function project1() {
     document.body.appendChild(renderer.domElement);
     const controls = new OrbitControls(camera, renderer.domElement);
 
+    /*const ambientLight = new THREE.AmbientLight( 0xffffff, 1);  
+        scene.add(ambientLight);*/
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // White light, intensity 1
+        directionalLight.position.set(2, 2, 300); // Position the light
+        scene.add(directionalLight);
+
+        const directionalLight1 = new THREE.DirectionalLight(0xffffff, 1); // White light, intensity 1
+        directionalLight1.position.set(2, 2, -300); // Position the light
+        scene.add(directionalLight1);
+
+        //const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 30);
+         //scene.add(directionalLightHelper);
+
     let parentWidth = 100, parentHeight = 900;
-    let keyHoleMid = parentWidth / 2;
     let biasing = 10;
+
+if(parentWidth> 300) parentWidth=100;
+let keyHoleMid = parentWidth / 2;
+
     const parentShape = new THREE.Shape();
     parentShape.moveTo(0, 0);
     parentShape.absarc(parentWidth / 2, 0, parentWidth / 2, Math.PI, Math.PI * 2, false);
@@ -1305,7 +1322,7 @@ function project1() {
         bevelEnabled: false
     };
     const parentGeometry = new THREE.ExtrudeGeometry(parentShape, extrudeSettings);
-    const parentMaterial = new THREE.MeshBasicMaterial({ color: "green", side: THREE.DoubleSide });
+    const parentMaterial = new THREE.MeshStandardMaterial({ color: "green", side: THREE.DoubleSide });
     const parentMesh = new THREE.Mesh(parentGeometry, parentMaterial);
     scene.add(parentMesh);
 
@@ -1313,10 +1330,6 @@ function project1() {
     const parentEdgesMaterial = new THREE.LineBasicMaterial({ color: "white" });
     const parentEdgesMesh = new THREE.LineSegments(parentEdges, parentEdgesMaterial);
     parentMesh.add(parentEdgesMesh);
-
-    const handleCircle = new THREE.Shape();
-    handleCircle.absarc(0, 0, keyHoleWidth / 2, 0, Math.PI * 2, false);
-    handleCircle.lineTo(0, 0);
 
     const handlePoints = [
         new THREE.Vector3(0, 0, -50),
@@ -1334,10 +1347,20 @@ function project1() {
         8,
         false
     );
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const material = new THREE.MeshStandardMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
     const handleMesh = new THREE.Mesh(handleGeometry, material);
     handleMesh.position.set(parentWidth / 2, 50, 100);
     parentMesh.add(handleMesh);
+
+    function rotateHandle(isHandleRotated)
+    {
+        if(isHandleRotated)
+        {
+            handleMesh.rotation.set(0, -Math.PI, 0);
+        }
+    }
+
+    rotateHandle(false);
 
     const knob = new THREE.Shape();
     knob.moveTo(keyHoleMid-20, 0);
@@ -1354,10 +1377,11 @@ function project1() {
     };
 
     const knobGeometry = new THREE.ExtrudeGeometry(knob, knobSettings);
-    const knobMaterial = new THREE.MeshBasicMaterial({ color: "red", side: THREE.DoubleSide });
+    const knobMaterial = new THREE.MeshStandardMaterial({ color: "red", side: THREE.DoubleSide });
     const knobMesh = new THREE.Mesh(knobGeometry, knobMaterial);
     knobMesh.position.set(0, 550, 50);
-    scene.add(knobMesh);
+    parentMesh.add(knobMesh);
+    parentMesh.position.set(0,-400,0);
 
     // Animating the shape
     function animate() {
