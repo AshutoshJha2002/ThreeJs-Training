@@ -829,19 +829,14 @@ function mySelf() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
     const controls = new OrbitControls(camera, renderer.domElement);
-    let R = 60, r = 30;
-    const shape = new THREE.Shape();
-    shape.moveTo(0, 0);
-    shape.absarc(0, 0, 60, 0, Math.PI, false);
-    const hole = new THREE.Shape();
-    hole.moveTo(0, -1);
-    hole.absarc(0, -1, 30, 0, Math.PI, false);
-    shape.holes.push(hole);
-    shape.lineTo(0, -1);
-    const geometry = new THREE.ExtrudeGeometry(shape);
-    const material = new THREE.MeshBasicMaterial({ color: "red", wireframe: false });
-    const mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
+    const path=new THREE.CurvePath();
+    const line=new THREE.LineCurve(new THREE.Vector2(0,0), new THREE.Vector2(2,2));
+    path.add(line);
+    const bezier=new THREE.QuadraticBezierCurve(
+        new THREE.Vector2(),
+        new THREE.Vector2(),
+        new THREE.Vector2()
+    );
     function animate() {
         requestAnimationFrame(animate);
         controls.update();
@@ -1278,26 +1273,29 @@ function project1() {
     document.body.appendChild(renderer.domElement);
     const controls = new OrbitControls(camera, renderer.domElement);
 
-    /*const ambientLight = new THREE.AmbientLight( 0xffffff, 1);  
-        scene.add(ambientLight);*/
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+    scene.add(ambientLight);
 
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // White light, intensity 1
-        directionalLight.position.set(2, 2, 300); // Position the light
-        scene.add(directionalLight);
+    /*const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // White light, intensity 1
+    directionalLight.position.set(2, 2, 300); // Position the light
+    scene.add(directionalLight);
 
-        const directionalLight1 = new THREE.DirectionalLight(0xffffff, 1); // White light, intensity 1
-        directionalLight1.position.set(2, 2, -300); // Position the light
-        scene.add(directionalLight1);
+    const directionalLight1 = new THREE.DirectionalLight(0xffffff, 1); // White light, intensity 1
+    directionalLight1.position.set(2, 2, -300); // Position the light
+    scene.add(directionalLight1);*/
 
-        //const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 30);
-         //scene.add(directionalLightHelper);
+    //const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 30);
+    //scene.add(directionalLightHelper);
 
-    let parentWidth = 100, parentHeight = 900;
+    let parentWidth = 100, parentHeight = 1300;
+    if (parentWidth < 100) parentWidth = 100;
+    if (parentHeight < 800) parentHeight = 800;
     let biasing = 10;
-
-if(parentWidth> 300) parentWidth=100;
-let keyHoleMid = parentWidth / 2;
-
+    let changedParentWidth = (parentWidth - 100) / 2;
+    let changedParentHeight = parentHeight - 900;
+    //let keyHoleMid = parentWidth / 2;
+    let keyHoleMid = 50;
+    //#region Handle BackPlate
     const parentShape = new THREE.Shape();
     parentShape.moveTo(0, 0);
     parentShape.absarc(parentWidth / 2, 0, parentWidth / 2, Math.PI, Math.PI * 2, false);
@@ -1307,22 +1305,22 @@ let keyHoleMid = parentWidth / 2;
     // parentShape.lineTo(0, parentHeight);
     parentShape.lineTo(0, 0);
 
-    const keyHoleWidth = parentWidth / 3, keyHoleHeight = 200;
+    const keyHoleWidth = 33.33, keyHoleHeight = 200;
     const keyHoleShape = new THREE.Shape();
-    keyHoleShape.moveTo(-keyHoleWidth / 2 + keyHoleMid, keyHoleHeight);
-    keyHoleShape.absarc(keyHoleMid, keyHoleHeight, keyHoleWidth / 2, Math.PI, Math.PI * 2, false);
-    keyHoleShape.lineTo(keyHoleWidth / 2 + keyHoleMid, keyHoleHeight);
-    keyHoleShape.lineTo(keyHoleWidth / 2 + keyHoleMid, keyHoleHeight + 100 - biasing);
-    keyHoleShape.absarc(keyHoleMid, keyHoleHeight + 100, keyHoleWidth / 2 + biasing, 0, Math.PI, false);
-    keyHoleShape.lineTo(-keyHoleWidth / 2 + keyHoleMid, keyHoleHeight + 100 - biasing);
-    keyHoleShape.lineTo(-keyHoleWidth / 2 + keyHoleMid, keyHoleHeight);
+    keyHoleShape.moveTo(-keyHoleWidth / 2 + keyHoleMid + changedParentWidth, keyHoleHeight);
+    keyHoleShape.absarc(keyHoleMid + changedParentWidth, keyHoleHeight, keyHoleWidth / 2, Math.PI, Math.PI * 2, false);
+    keyHoleShape.lineTo(keyHoleWidth / 2 + keyHoleMid + changedParentWidth, keyHoleHeight);
+    keyHoleShape.lineTo(keyHoleWidth / 2 + keyHoleMid + changedParentWidth, keyHoleHeight + 100 - biasing);
+    keyHoleShape.absarc(keyHoleMid + changedParentWidth, keyHoleHeight + 100, keyHoleWidth / 2 + biasing, 0, Math.PI, false);
+    keyHoleShape.lineTo(-keyHoleWidth / 2 + keyHoleMid + changedParentWidth, keyHoleHeight + 100 - biasing);
+    keyHoleShape.lineTo(-keyHoleWidth / 2 + keyHoleMid + changedParentWidth, keyHoleHeight);
     parentShape.holes.push(keyHoleShape);
     const extrudeSettings = {
         depth: 50,
         bevelEnabled: false
     };
     const parentGeometry = new THREE.ExtrudeGeometry(parentShape, extrudeSettings);
-    const parentMaterial = new THREE.MeshStandardMaterial({ color: "green", side: THREE.DoubleSide });
+    const parentMaterial = new THREE.MeshPhysicalMaterial({ color: "white", side: THREE.DoubleSide });
     const parentMesh = new THREE.Mesh(parentGeometry, parentMaterial);
     scene.add(parentMesh);
 
@@ -1330,14 +1328,19 @@ let keyHoleMid = parentWidth / 2;
     const parentEdgesMaterial = new THREE.LineBasicMaterial({ color: "white" });
     const parentEdgesMesh = new THREE.LineSegments(parentEdges, parentEdgesMaterial);
     parentMesh.add(parentEdgesMesh);
+    //#endregion
 
+    //#region Handle Geometry
+    let handleWidth = 100;
     const handlePoints = [
-        new THREE.Vector3(0, 0, -50),
-        new THREE.Vector3(0, 0, 0),
-        new THREE.Vector3(-parentWidth, 0, 0),
-        new THREE.Vector3(-parentWidth, parentHeight - 100, 0),
-        new THREE.Vector3(0, parentHeight - 100, 0),
-        new THREE.Vector3(0, parentHeight - 100, -50)
+        new THREE.Vector3(0, 0 - changedParentWidth, -50),
+        new THREE.Vector3(0, 0 - changedParentWidth, 0),
+        new THREE.Vector3(-handleWidth, 0 - changedParentWidth, 0),
+        //new THREE.Vector3(-handleWidth-40, 400 - 100 + changedParentWidth + changedParentHeight, 0),
+        //new THREE.Vector3(-handleWidth-40, 600 - 100 + changedParentWidth + changedParentHeight, 0),
+        new THREE.Vector3(-handleWidth, 900 - 100 + changedParentWidth + changedParentHeight, 0),
+        new THREE.Vector3(0, 900 - 100 + changedParentWidth + changedParentHeight, 0),
+        new THREE.Vector3(0, 900 - 100 + changedParentWidth + changedParentHeight, -50)
     ];
     const handlePath = new THREE.CatmullRomCurve3(handlePoints);
     const handleGeometry = new THREE.TubeGeometry(
@@ -1347,29 +1350,36 @@ let keyHoleMid = parentWidth / 2;
         8,
         false
     );
-    const material = new THREE.MeshStandardMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
+    const material = new THREE.MeshPhysicalMaterial({ color: "white", side: THREE.DoubleSide, roughness: 0.2 });
     const handleMesh = new THREE.Mesh(handleGeometry, material);
     handleMesh.position.set(parentWidth / 2, 50, 100);
     parentMesh.add(handleMesh);
 
-    function rotateHandle(isHandleRotated)
-    {
-        if(isHandleRotated)
-        {
-            handleMesh.rotation.set(0, -Math.PI, 0);
+    const handleEdges = new THREE.EdgesGeometry(handleGeometry);
+    const handleEdgesMaterial = new THREE.LineBasicMaterial({ color: "white" });
+    const handleEdgesMesh = new THREE.LineSegments(handleEdges, handleEdgesMaterial);
+    handleMesh.add(handleEdgesMesh);
+
+    function rotateHandle(isHandleRotated) {
+        if (isHandleRotated) {
+            handleMesh.rotation.set(Math.PI, -Math.PI, 0);
+            handleMesh.position.set(parentWidth / 2, parentHeight - 50, 100);
         }
     }
 
     rotateHandle(false);
+    //#endregion
 
+    //#region knob Geometry
+    let knobHeight = 550;
     const knob = new THREE.Shape();
-    knob.moveTo(keyHoleMid-20, 0);
-    knob.absarc(keyHoleMid,0, 20, Math.PI, Math.PI*2, false);
-    knob.lineTo(keyHoleMid+20, 0);
-    knob.lineTo(keyHoleMid+20+biasing, 200);
-    knob.absarc(keyHoleMid,200,keyHoleMid/2+biasing/2,0, Math.PI, false);
-    knob.lineTo(keyHoleMid-20-biasing, 200);
-    knob.lineTo(keyHoleMid-20, 0);
+    knob.moveTo(keyHoleMid - 20 + changedParentWidth, 0);
+    knob.absarc(keyHoleMid + changedParentWidth, 0, 20, Math.PI, Math.PI * 2, false);
+    knob.lineTo(keyHoleMid + 20 + changedParentWidth, 0);
+    knob.lineTo(keyHoleMid + 20 + biasing + changedParentWidth, 200);
+    knob.absarc(keyHoleMid + changedParentWidth, 200, keyHoleMid / 2 + biasing / 2, 0, Math.PI, false);
+    knob.lineTo(keyHoleMid - 20 - biasing + changedParentWidth, 200);
+    knob.lineTo(keyHoleMid - 20 + changedParentWidth, 0);
 
     const knobSettings = {
         depth: 50,
@@ -1377,11 +1387,17 @@ let keyHoleMid = parentWidth / 2;
     };
 
     const knobGeometry = new THREE.ExtrudeGeometry(knob, knobSettings);
-    const knobMaterial = new THREE.MeshStandardMaterial({ color: "red", side: THREE.DoubleSide });
+    const knobMaterial = new THREE.MeshPhysicalMaterial({ color: "white", side: THREE.DoubleSide });
     const knobMesh = new THREE.Mesh(knobGeometry, knobMaterial);
-    knobMesh.position.set(0, 550, 50);
+    knobMesh.position.set(0, knobHeight, 50);
     parentMesh.add(knobMesh);
-    parentMesh.position.set(0,-400,0);
+    parentMesh.position.set(0, -400, 0);
+
+    const knobEdges = new THREE.EdgesGeometry(knobGeometry);
+    const knobEdgesMaterial = new THREE.LineBasicMaterial({ color: "white" });
+    const knobEdgesMesh = new THREE.LineSegments(knobEdges, knobEdgesMaterial);
+    knobMesh.add(knobEdgesMesh);
+    //#endregion
 
     // Animating the shape
     function animate() {
@@ -1545,7 +1561,278 @@ function task7() {
     animate();
 }
 
-project1();
+function project2()
+{
+    //Setting scene, camera and renderer
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+    camera.position.set(0, 0, 2500);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+    const controls = new OrbitControls(camera, renderer.domElement);
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+    scene.add(ambientLight);
+
+    /*const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // White light, intensity 1
+    directionalLight.position.set(2, 2, 300); // Position the light
+    scene.add(directionalLight);
+
+    const directionalLight1 = new THREE.DirectionalLight(0xffffff, 1); // White light, intensity 1
+    directionalLight1.position.set(2, 2, -300); // Position the light
+    scene.add(directionalLight1);*/
+
+    //const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 30);
+    //scene.add(directionalLightHelper);
+
+    let parentWidth = 400, parentHeight = 800;
+    //if (parentWidth < 400) parentWidth = 400;
+    if (parentHeight < 800) parentHeight = 800;
+    let biasing = 10;
+    let changedParentWidth = (parentWidth - 100) / 2;
+    let changedParentHeight = parentHeight - 900;
+    let handleHeight=400
+    //let keyHoleMid = parentWidth / 2;
+    let keyHoleMid = 50;
+    //#region Handle BackPlate
+    const parentShape = new THREE.Shape();
+    parentShape.moveTo(0, 0);
+    parentShape.absarc(parentWidth / 2, 0, parentWidth / 2, Math.PI, Math.PI * 2, false);
+    // parentShape.lineTo(parentWidth, 0);
+    parentShape.lineTo(parentWidth, parentHeight);
+    parentShape.absarc(parentWidth / 2, parentHeight, parentWidth / 2, 0, Math.PI, false);
+    // parentShape.lineTo(0, parentHeight);
+    parentShape.lineTo(0, 0);
+
+    const keyHoleWidth = 33.33, keyHoleHeight = 100;
+    const keyHoleShape = new THREE.Shape();
+    keyHoleShape.moveTo(-keyHoleWidth / 2 + keyHoleMid + changedParentWidth, keyHoleHeight);
+    keyHoleShape.absarc(keyHoleMid + changedParentWidth, keyHoleHeight, keyHoleWidth / 2, Math.PI, Math.PI * 2, false);
+    keyHoleShape.lineTo(keyHoleWidth / 2 + keyHoleMid + changedParentWidth, keyHoleHeight);
+    keyHoleShape.lineTo(keyHoleWidth / 2 + keyHoleMid + changedParentWidth, keyHoleHeight + 100 - biasing);
+    keyHoleShape.absarc(keyHoleMid + changedParentWidth, keyHoleHeight + 100, keyHoleWidth / 2 + biasing, 0, Math.PI, false);
+    keyHoleShape.lineTo(-keyHoleWidth / 2 + keyHoleMid + changedParentWidth, keyHoleHeight + 100 - biasing);
+    keyHoleShape.lineTo(-keyHoleWidth / 2 + keyHoleMid + changedParentWidth, keyHoleHeight);
+    parentShape.holes.push(keyHoleShape);
+
+    const bottomHole=new THREE.Path();
+    bottomHole.absarc(parentWidth/2,-50,30,0,Math.PI*2, false);
+
+    parentShape.holes.push(bottomHole);
+
+    const topHole=new THREE.Path();
+    topHole.absarc(parentWidth/2,parentHeight,30,0,Math.PI*2, false);
+
+    parentShape.holes.push(topHole);
+
+    const middleHole=new THREE.Path();
+    middleHole.absarc(parentWidth/2,parentHeight-250,15,0,Math.PI*2, false);
+
+    parentShape.holes.push(middleHole);
+
+    const extrudeSettings = {
+        depth: 50,
+        bevelEnabled: false
+    };
+    const parentGeometry = new THREE.ExtrudeGeometry(parentShape, extrudeSettings);
+    const parentMaterial = new THREE.MeshPhysicalMaterial({ color: "white", side: THREE.DoubleSide });
+    const parentMesh = new THREE.Mesh(parentGeometry, parentMaterial);
+    scene.add(parentMesh);
+
+    const parentEdges = new THREE.EdgesGeometry(parentGeometry);
+    const parentEdgesMaterial = new THREE.LineBasicMaterial({ color: "white" });
+    const parentEdgesMesh = new THREE.LineSegments(parentEdges, parentEdgesMaterial);
+    parentMesh.add(parentEdgesMesh);
+    //#endregion
+
+    let slideHandleWidth=500;
+    const slideHnadleShape=new THREE.Shape();
+    slideHnadleShape.moveTo(0,-10);
+
+//slideHnadleShape.bezierCurveTo(0,0,slideHandleWidth/2, -5*biasing, slideHandleWidth, 0);
+
+    //slideHnadleShape.lineTo(slideHandleWidth, 0);
+   // slideHnadleShape.lineTo(slideHandleWidth, 100);
+   slideHnadleShape.lineTo(100,0);
+    //slideHnadleShape.lineTo(100,100);
+
+slideHnadleShape.bezierCurveTo(100,0,100-5*biasing, 200, 100, 200);
+
+    //slideHnadleShape.lineTo(100,300);
+    slideHnadleShape.lineTo(-50,200);
+    slideHnadleShape.lineTo(-50,100);
+    slideHnadleShape.lineTo(0,-10);
+
+    const slideHandleSettings={
+depth: 100,
+bevelEnabled: false
+    };
+
+    const slideHandleGeometry=new THREE.ExtrudeGeometry(slideHnadleShape, slideHandleSettings);
+    const slideHandleMaterial=new THREE.MeshPhysicalMaterial({color: "white", side: THREE.DoubleSide});
+    const slideHandleMesh=new THREE.Mesh(slideHandleGeometry, slideHandleMaterial);
+    scene.add(slideHandleMesh);
+
+    slideHandleMesh.position.set(0,100,0)
+
+    const slideHandleEdges = new THREE.EdgesGeometry(slideHandleGeometry);
+    const slideHandleEdgesMaterial = new THREE.LineBasicMaterial({ color: "white" });
+    const slideHandleEdgesMesh = new THREE.LineSegments(slideHandleEdges, slideHandleEdgesMaterial);
+    slideHandleMesh.add(slideHandleEdgesMesh);
+
+    const slideHandleJoin=new THREE.Shape();
+    slideHandleJoin.moveTo(0,40);
+    slideHandleJoin.bezierCurveTo(0,40,0,0,-60,0);
+    slideHandleJoin.lineTo(-60,20);
+    slideHandleJoin.bezierCurveTo(-60,20,-20,20,-20,40);
+    slideHandleJoin.lineTo(0,40);
+
+    const slideHandleJoinSettings={
+        depth: 20,
+        bevelEnabled: false
+            };
+        
+            const slideHandleJoinGeometry=new THREE.ExtrudeGeometry(slideHandleJoin, slideHandleJoinSettings);
+            const slideHandleJoinMaterial=new THREE.MeshPhysicalMaterial({color: "white", side: THREE.DoubleSide});
+            const slideHandleJoinMesh=new THREE.Mesh(slideHandleJoinGeometry, slideHandleJoinMaterial);
+            scene.add(slideHandleJoinMesh);
+
+            slideHandleJoinMesh.scale.set(5,5,5);
+            slideHandleJoinMesh.position.set(200,100+handleHeight,575);
+            slideHandleJoinMesh.rotation.set(Math.PI/2,0,-Math.PI);
+        
+            const slideHandleJoinEdges = new THREE.EdgesGeometry(slideHandleJoinGeometry);
+            const slideHandleJoinEdgesMaterial = new THREE.LineBasicMaterial({ color: "white" });
+            const slideHandleJoinEdgesMesh = new THREE.LineSegments(slideHandleJoinEdges, slideHandleJoinEdgesMaterial);
+            slideHandleJoinMesh.add(slideHandleJoinEdgesMesh);
+
+
+    const slideHandleTop=new THREE.Shape();
+    slideHandleTop.moveTo(-75, 350);
+    slideHandleTop.lineTo(150,350);
+    slideHandleTop.lineTo(175, 400);
+    slideHandleTop.lineTo(175, 450);
+    slideHandleTop.lineTo(-100, 450);
+    slideHandleTop.lineTo(-100, 400);
+    slideHandleTop.lineTo(-75, 350);
+
+    const slideHandleTopSettings={
+depth: 100,
+bevelEnabled: false
+    };
+
+    const slideHandleTopGeometry=new THREE.ExtrudeGeometry(slideHandleTop, slideHandleTopSettings);
+    const slideHandleTopMaterial=new THREE.MeshPhysicalMaterial({color: "white", side: THREE.DoubleSide});
+    const slideHandleTopMesh=new THREE.Mesh(slideHandleTopGeometry, slideHandleTopMaterial);
+    slideHandleMesh.add(slideHandleTopMesh);
+
+slideHandleTopMesh.position.set(0,-30,0);
+
+    const slideHandleTopEdges = new THREE.EdgesGeometry(slideHandleTopGeometry);
+    const slideHandleTopEdgesMaterial = new THREE.LineBasicMaterial({ color: "white" });
+    const slideHandleTopEdgesMesh = new THREE.LineSegments(slideHandleTopEdges, slideHandleTopEdgesMaterial);
+    slideHandleTopMesh.add(slideHandleTopEdgesMesh);
+
+    const slideHandleBottomShape=new THREE.Shape();
+    slideHandleBottomShape.moveTo(0,0);
+    slideHandleBottomShape.bezierCurveTo(0,0,slideHandleWidth/2, -5*biasing, slideHandleWidth, 0);
+    slideHandleBottomShape.lineTo(slideHandleWidth, 0);
+    slideHandleBottomShape.lineTo(slideHandleWidth, 100);
+
+    slideHandleBottomShape.bezierCurveTo(slideHandleWidth,100,(slideHandleWidth-100)/2, 15*biasing, 0, 100);
+
+    slideHandleBottomShape.lineTo(0,100);
+    slideHandleBottomShape.lineTo(0,0);
+
+    const slideHandleBottomSettings={
+        depth: 100,
+        bevelEnabled: false
+            };
+        
+            const slideHandleBottomGeometry=new THREE.ExtrudeGeometry(slideHandleBottomShape, slideHandleBottomSettings);
+            const slideHandleBottomMaterial=new THREE.MeshPhysicalMaterial({color: "white", side: THREE.DoubleSide});
+            const slideHandleBottomMesh=new THREE.Mesh(slideHandleBottomGeometry, slideHandleBottomMaterial);
+            slideHandleMesh.add(slideHandleBottomMesh);
+        
+        slideHandleTopMesh.position.set(0,-30,0);
+        
+            const slideHandleBottomEdges = new THREE.EdgesGeometry(slideHandleBottomGeometry);
+            const slideHandleBottomEdgesMaterial = new THREE.LineBasicMaterial({ color: "white" });
+            const slideHandleBottomEdgesMesh = new THREE.LineSegments(slideHandleBottomEdges, slideHandleBottomEdgesMaterial);
+            slideHandleBottomMesh.add(slideHandleBottomEdgesMesh);
+
+            slideHandleBottomMesh.rotation.set(-Math.PI/2,0,0);
+
+            slideHandleBottomMesh.position.set(300,-100,100);
+
+            //slideHandleBottomMesh.rotation.set(0,0,0);
+
+            const group=new THREE.Group();
+            group.add(slideHandleMesh);
+           // group.add(slideHandleJoinMesh);
+            group.add(slideHandleBottomMesh);
+            group.add(slideHandleTopMesh);
+            scene.add(group);
+
+            group.rotation.set(-Math.PI/2,0,0);
+            group.position.set(parentWidth/2,handleHeight,470);
+
+            function rotateHandle(isHandleRotated) {
+                if (isHandleRotated) {
+                    group.rotation.set(-Math.PI/2, -Math.PI, 0);
+                    group.position.set(parentWidth / 2, parentHeight - 300, 450);
+                    slideHandleJoinMesh.rotation.set(-Math.PI/2,0,0);
+                    slideHandleJoinMesh.position.set(200,400,550);
+                }
+            }
+rotateHandle(false);
+
+const screw=new THREE.Shape();
+screw.moveTo(0,3);
+screw.absarc(0.5,3,0.5,Math.PI,Math.PI*2,false);
+//screw.lineTo(1,3);
+screw.absarc(1,3.5,0.5,3*(Math.PI/2), Math.PI/2,false);
+//screw.lineTo(1,4);
+screw.absarc(0,4,0.5,0,Math.PI, false);
+//screw.lineTo(0,4);
+screw.absarc(0,3.5,0.5,Math.PI/2,3*(Math.PI/2), false);
+screw.lineTo(0,3);
+
+const screwGeometry=new THREE.ExtrudeGeometry(screw);
+const screwMaterial=new THREE.MeshPhysicalMaterial({color: "white"});
+const screwMesh=new THREE.Mesh(screwGeometry, screwMaterial);
+//scene.add(screwMesh);
+screwMesh.scale.set(8,8,8);
+screwMesh.position.set(parentWidth/2,-80,50);
+
+const screw2=new THREE.Shape();
+screw2.moveTo(0,3);
+screw2.absarc(0.5,3,1,Math.PI,Math.PI*2,false);
+screw2.lineTo(1,3);
+screw2.absarc(1,3.5,1,3*(Math.PI/2), Math.PI/2,false);
+screw2.lineTo(1,4);
+screw2.absarc(0,4,1,0,Math.PI, false);
+screw2.lineTo(0,4);
+screw2.absarc(0,3.5,1,Math.PI/2,3*(Math.PI/2), false);
+screw2.lineTo(0,3);
+
+const screwGeometry2=new THREE.ExtrudeGeometry(screw2);
+const screwMaterial2=new THREE.MeshPhysicalMaterial({color: "black"});
+const screwMesh2=new THREE.Mesh(screwGeometry2, screwMaterial2);
+//scene.add(screwMesh2);
+screwMesh2.scale.set(8,8,8);
+screwMesh2.position.set(parentWidth/2,parentHeight-30,50);
+
+    // Animating the shape
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+    }
+    animate();
+}
+//project1();
 //task6();
 //mySelf();
 //test2();
@@ -1557,3 +1844,4 @@ project1();
 //test4();
 //task5();
 //task7();
+project2();
