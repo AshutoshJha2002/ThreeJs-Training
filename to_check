@@ -2682,10 +2682,12 @@ function getEuclideanDistance(vertex1, vertex2) {
 }
 
 let lines = [];
+let click = 0;
 
 function getExtrudeSettings(vertex1, vertex2) {
     const path = new THREE.LineCurve3(vertex1, vertex2);
     lines.push(path);
+    //console.log(lines);
     if (lines.length === 3) lines.shift();
     const extrudeSettings = {
         depth: 10,
@@ -2739,7 +2741,89 @@ function createMesh(vertex1, vertex2, flag) {
         //theta /= 2;
         //console.log(theta);
     }
+    let line1, line2, degree, radian;
     if (lines.length === 2) {
+        let v1 = lines[0].v1;
+        let v2 = lines[0].v2;
+        let v3 = lines[1].v2;
+        line1 = new THREE.Vector3().subVectors(v1, v2); // v1 - v2
+        line2 = new THREE.Vector3().subVectors(v3, v2); // v3 - v2
+
+        // Step 3: Normalize the vectors (optional but good for angle calculations)
+        line1.normalize();
+        line2.normalize();
+        const dot = line1.dot(line2);
+
+        // Step 5: Calculate the angle in radians
+        radian = Math.acos(dot);
+
+        // Step 6: Convert to degrees (optional)
+        degree = THREE.MathUtils.radToDeg(radian);
+
+        // Direction vectors from v2
+        const dir1 = new THREE.Vector3().subVectors(v1, v2).normalize(); // v1 -> v2
+        const dir2 = new THREE.Vector3().subVectors(v3, v2).normalize(); // v3 -> v2
+
+        // Add the vectors to get the bisector direction
+        const bisectorDir = new THREE.Vector3().addVectors(dir1, dir2).normalize();
+
+        // Optional: Set the length of the bisector line
+        const bisectorLength = 200;
+        const bisectorEnd = new THREE.Vector3().addVectors(v2, bisectorDir.multiplyScalar(bisectorLength));
+
+        // Create geometry and material for bisector line
+        const bisectorGeometry = new THREE.BufferGeometry().setFromPoints([v2, bisectorEnd]);
+        const bisectorMaterial = new THREE.LineBasicMaterial({ color: 0xff00ff }); // Pink line
+        const bisectorLine = new THREE.Line(bisectorGeometry, bisectorMaterial);
+
+        // Add to scene
+        scene.add(bisectorLine);
+
+        if (arrMesh.length === 2) {
+            for (let j = 0; j < 2; j++) {
+                const pointsArray = arrMesh[j].geometry.attributes.position;
+                for (let i = 0; i < pointsArray.count; i++) {
+                    let xCor = pointsArray.getX(i);
+                    let yCor = pointsArray.getY(i);
+                    if(click===3){
+                    if (j === 0) {
+                        if (yCor > v2.y && xCor > v1.x - 30) {
+                            pointsArray.setX(i, xCor - 100);
+                        }
+                    }
+                    if (j === 1) {
+                        if (xCor < v2.x && yCor <= v2.y + 150) {
+                            pointsArray.setY(i, yCor + 100);
+                        }
+                        if(xCor < v3.x-30 && yCor > v1.y + 150)
+                            {
+                                //console.log(xCor,yCor, v2);
+                                pointsArray.setY(i, yCor-100);
+                            }
+                        //console.log(xCor, yCor, v2.x, v2.y);
+                    }
+                }
+                if(click===4)
+                {
+                    if(j===1)
+                    {
+                        if (yCor < v2.y-10 && (xCor > v2.x - 30)) {
+                            pointsArray.setX(i, xCor - 100);
+                        }
+                    }
+                }
+                }
+                if(click===3) scene.add(arrMesh[0]);
+                else scene.add(arrMesh[j]);
+            }
+        }
+
+
+
+
+
+
+        //console.log(v1, v2, v3);
         //lines[0]=new THREE.LineCurve3(lines[0].v1.normalize(), lines[0].v2.normalize());
         //lines[1]=new THREE.LineCurve3(lines[1].v1.normalize(), lines[1].v2.normalize());
         //console.log((lines[0].angleTo(lines[1]))*(180/Math.PI));
@@ -2747,32 +2831,32 @@ function createMesh(vertex1, vertex2, flag) {
         //    console.log(lines[0][0].normalize());
         //console.log(lines[0]);
         // console.log(lines[1]);
-        let dv1 = new THREE.Vector3(), dv2 = new THREE.Vector3();
-        dv1.subVectors(lines[0].v1, lines[0].v2);
-        dv2.subVectors(lines[1].v1, lines[1].v2);
-        dv1 = dv1.normalize();
-        dv2 = dv2.normalize();
-        let dv = new THREE.Vector3();
-        dv.subVectors(dv1, dv2);
-        dv.x /= 2;
-        dv.y /= 2;
-        dv.z /= 2;
+        /* let dv1 = new THREE.Vector3(), dv2 = new THREE.Vector3();
+         dv1.subVectors(lines[0].v1, lines[0].v2);
+         dv2.subVectors(lines[1].v1, lines[1].v2);
+         dv1 = dv1.normalize();
+         dv2 = dv2.normalize();
+         let dv = new THREE.Vector3();
+         dv.subVectors(dv1, dv2);
+         dv.x /= 2;
+         dv.y /= 2;
+         dv.z /= 2;*/
         //dv = (dv1, dv2).normalize();
         //theta=(dv1.angleTo(dv2))/2;
-        const arrowHelper = new THREE.ArrowHelper(dv, vertex1, 200);
+        //const arrowHelper = new THREE.ArrowHelper(dv, vertex1, 200);
         //scene.add(arrowHelper);
-        let arr = arrowHelper.line;
+        // let arr = arrowHelper.line;
         //console.log(arr);
         //console.log(arrowHelper);
     }
     if (flag % 2) vertex2 = vertex1;
     if (arrMesh.length === 2) {
         for (let j = 0; j < arrMesh.length; j++) {
-            let xDup=-1, yDup=-1;
+            let xDup = -1, yDup = -1;
             //console.log(arrMesh[0]);
             let shifting = 100 * Math.tan(theta);
             //console.log(shifting, theta);
-            let max1 = -10000, max2 = -100000, min1 = 100000, min2 = 100000, index1 = -1, index2 = -1;
+            // let max1 = -10000, max2 = -100000, min1 = 100000, min2 = 100000, index1 = -1, index2 = -1;
             const pointsArray = arrMesh[j].geometry.attributes.position;
             //console.log(pointsArray);
             for (let i = 0; i < pointsArray.count; i++) {
@@ -2780,27 +2864,26 @@ function createMesh(vertex1, vertex2, flag) {
                 let yCor = pointsArray.getY(i);
                 let zCor = pointsArray.getZ(i);
 
-                if (j === 0 && i===9)  //xCor>=vertex2.x && yCor>vertex2.y
+                if (j === 0 && i === 9)  //xCor>=vertex2.x && yCor>vertex2.y
                 {
                     //xCor=max1;
                     //yCor=max2;
-                    index1 = i;
-                    xDup=xCor;
-                    yDup=yCor;
-                    pointsArray.setX(i, pointsArray.getX(i)-100);
-                    console.log(1, xCor, yCor);
+                    //index1 = i;
+                    // xDup=xCor;
+                    //yDup=yCor;
+                    // pointsArray.setX(i, pointsArray.getX(i)-100);
+                    // console.log(1, xCor, yCor);
                 }
-                if(j===0 && i!=3 && xCor===xDup && yCor===yDup)
-                {
-                    pointsArray.setX(i, pointsArray.getX(i)-100);
+                if (j === 0 && i != 3 && xCor === xDup && yCor === yDup) {
+                    //pointsArray.setX(i, pointsArray.getX(i)-100);
                 }
 
                 if (j === 1) //xCor<vertex1.x && yCor<=vertex1.y
                 {
                     //  xCor=min1;
                     //yCor=min2;
-                    index2 = i;
-                    console.log(2, xCor, yCor);
+                    // index2 = i;
+                    //console.log(2, xCor, yCor);
                     //pointsArray.setY(index2, pointsArray.getY(index2)+100);
                 }
 
@@ -2825,7 +2908,7 @@ function createMesh(vertex1, vertex2, flag) {
                 // pointsArray.setX(index2, pointsArray.getX(index2)-1000);
                 // console.log(1);
             }
-            scene.add(arrMesh[j]);
+            //scene.add(arrMesh[j]);
             const meshEdges = new THREE.EdgesGeometry(arrMesh[j].geometry);
             const meshEdgesMaterial = new THREE.LineBasicMaterial({ color: "white" });
             const meshEdgesMesh = new THREE.LineSegments(meshEdges, meshEdgesMaterial);
@@ -2862,7 +2945,7 @@ function rayCasting() {
     }
 
     function onPointerMove(event) {
-
+        click++;
         pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
         pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
         render();
